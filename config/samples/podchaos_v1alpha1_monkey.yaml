@@ -1,0 +1,10 @@
+apiVersion: podchaos.podchaosmonkey.pt/v1alpha1
+kind: Monkey
+metadata:
+  name: monkey-sample
+spec:
+  noop: true
+  interval: 1m
+  selector:
+    matchLabels:
+      chaosAllowed: "true"

@@ -1,0 +1,16 @@
+domain: podchaosmonkey.pt
+layout:
+- go.kubebuilder.io/v3
+projectName: podchaosmonkey
+repo: github.com/perithompson/podchaosmonkey
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: podchaosmonkey.pt
+  group: podchaos
+  kind: Monkey
+  path: github.com/perithompson/podchaosmonkey/api/v1alpha1
+  version: v1alpha1
+version: "3"

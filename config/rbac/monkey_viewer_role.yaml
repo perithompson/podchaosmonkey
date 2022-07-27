@@ -1,0 +1,20 @@
+# permissions for end users to view monkeys.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monkey-viewer-role
+rules:
+- apiGroups:
+  - podchaos.podchaosmonkey.pt
+  resources:
+  - monkeys
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - podchaos.podchaosmonkey.pt
+  resources:
+  - monkeys/status
+  verbs:
+  - get
