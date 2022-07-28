@@ -3,8 +3,9 @@ kind: Monkey
 metadata:
   name: monkey-sample
 spec:
-  noop: true
+  noop: false
   interval: 1m
+  namespace: workloads
   selector:
     matchLabels:
       chaosAllowed: "true"

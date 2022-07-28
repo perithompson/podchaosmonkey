@@ -45,10 +45,6 @@ type MonkeyReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the Monkey object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.11.2/pkg/reconcile
@@ -79,6 +75,7 @@ func (r *MonkeyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	return r.PerformExperiment(ctx, monkey)
 }
 
+//GetTarget chooses 1 pod that matches the namespace and labelselector provided to be deleted
 func (r *MonkeyReconciler) GetTarget(ctx context.Context, namespace string, labelSelector metav1.LabelSelector) (corev1.Pod, error) {
 	var list corev1.PodList
 
@@ -100,10 +97,12 @@ func (r *MonkeyReconciler) GetTarget(ctx context.Context, namespace string, labe
 	return corev1.Pod{}, nil
 }
 
+//int64ToPointerint64 returns pointer of int64
 func int64ToPointerint64(in int64) *int64 {
 	return &in
 }
 
+//PerformExperiment deletes 1 pod that matches the namespace and labelselector provided
 func (r *MonkeyReconciler) PerformExperiment(ctx context.Context, monkey *podchaosv1alpha1.Monkey) (ctrl.Result, error) {
 	monkeySay := ctrl.Log.WithName("controller").WithName("monkey")
 	target, err := r.GetTarget(ctx, monkey.Spec.Namespace, monkey.Spec.Selector)

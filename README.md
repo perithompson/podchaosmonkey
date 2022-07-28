@@ -1,21 +1,37 @@
 # podchaosmonkey
-// TODO(user): Add simple overview of use/purpose
+PodChaosMonkey is a simple controller created to run pod delete operations inside Kubernetes
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+The PodChaosMonkey simplifies randomised pod deletions utilising a controller to interact with the api-server in a given
+cluster.  It provides the Monkey [CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/extend-api-custom-resource-definitions) 
+```yaml
+apiVersion: podchaos.podchaosmonkey.pt/v1alpha1
+kind: Monkey
+metadata:
+  name: monkey-sample
+spec:
+  noop: true # choose to log only or run the pod delete operation
+  interval: 1m # choose to minimum interval to run operations default: 30s
+  namespace: workloads # choose to minimum interval to run operations
+  selector: # label selector for choosing the pods to delete
+    matchLabels:
+      chaosAllowed: "true" #example label
+```
+Once the **Monkey** Resource is loaded into the cluster, **podchaosmonkey** will add a status condition to indicate that the experiments are active from a given time. At every interval specified a pod matching the search criteria from the cluster will be deleted at random.
+
+## Background
+This controller was built using the kubernetes-sig project [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder) project which is an SDK created as part of the kubernetes project as a means to simplify the creation of [custom resource definitions (CRDs)](https://kubernetes.io/docs/tasks/access-kubernetes-api/extend-api-custom-resource-definitions).  As part of this resources such as RBAC and deployment templates are generated to standardise and improve reliability.
+
+This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) and uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) providing a reconcile function responsible for synchronizing resources and running the chaos experiments.
+
 
 ## Getting Started
-You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
+You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
 ### Running on the cluster
-1. Install Instances of Custom Resources:
 
-```sh
-kubectl apply -f config/samples/
-```
-
-2. Build and push your image to the location specified by `IMG`:
+1. Build and push your image to the location specified by `IMG`:
 	
 ```sh
 make docker-build docker-push IMG=<some-registry>/podchaosmonkey:tag
@@ -25,6 +41,23 @@ make docker-build docker-push IMG=<some-registry>/podchaosmonkey:tag
 
 ```sh
 make deploy IMG=<some-registry>/podchaosmonkey:tag
+```
+
+4. Deploy a sample workload
+```sh
+kubectl apply -f config/samples/sample-deployment.yaml
+```
+
+5. Create the Monkey resource:
+
+```sh
+kubectl apply -f config/samples/podchaos_v1alpha1_monkey.yaml
+```
+
+6. Watch the Monkey do his thing!
+
+```sh
+watch kubectl get pods -n workloads
 ```
 
 ### Uninstall CRDs
@@ -39,28 +72,6 @@ UnDeploy the controller to the cluster:
 
 ```sh
 make undeploy
-```
-
-## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
-
-### How it works
-This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
-
-It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) 
-which provides a reconcile function responsible for synchronizing resources untile the desired state is reached on the cluster 
-
-### Test It Out
-1. Install the CRDs into the cluster:
-
-```sh
-make install
-```
-
-2. Run your controller (this will run in the foreground, so switch to a new terminal if you want to leave it running):
-
-```sh
-make run
 ```
 
 **NOTE:** You can also run this in one step by running: `make install run`
